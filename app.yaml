@@ -1,0 +1,12 @@
+command: ['python', 'run.py']
+env:
+  - name: APP_MODE
+    value: production
+  - name: LAKEBASE_ENDPOINT
+    valueFrom: postgres
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: PROCUREMENT_UC_VIEW
+    value: REPLACE_CATALOG.REPLACE_SCHEMA.procurement_snapshot
+  - name: PROCUREMENT_EDITORS
+    value: REPLACE_WITH_COMMA_SEPARATED_UPNS

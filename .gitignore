@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+*.db
+*.db-*
+*.xlsx
+*.docx
+*.zip
+test-results/
+playwright-report/
+*staging*.json
+legacy-*.json
