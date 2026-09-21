@@ -42,9 +42,10 @@ def main():
                 for path in ["/referentiel", "/pdp", "/commandes", "/articles", "/articles/DEMO-001", "/parametres"]:
                     page.goto(BASE + path)
                     page.wait_for_load_state("networkidle")
+                    page.screenshot(path=str(OUT / f"route-{path.split('/')[-1]}.png"), full_page=True)
                     expect(page.locator("main h1")).to_have_count(1)
                     expect(page.get_by_role("alert")).to_have_count(0)
-                    expect(page.locator("main p")).to_have_count(0)
+                    assert page.locator("main p").count() == 0, (path, page.locator("main p").all_inner_texts())
                     expect(page.locator("aside svg, aside .brand")).to_have_count(0)
                 page.goto(BASE + "/referentiel")
                 page.get_by_role("tab", name="Nomenclatures (BOM)", exact=True).click()
