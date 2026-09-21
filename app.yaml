@@ -1,12 +1,18 @@
-command: ['python', 'run.py']
+command: ['bash', 'start.sh']
 env:
-  - name: APP_MODE
+  - name: PROCUREMENT_MODE
     value: production
+  - name: PROCUREMENT_DATA_SOURCE
+    value: uc
   - name: LAKEBASE_ENDPOINT
     valueFrom: postgres
   - name: DATABRICKS_WAREHOUSE_ID
     valueFrom: sql-warehouse
-  - name: PROCUREMENT_UC_VIEW
-    value: REPLACE_CATALOG.REPLACE_SCHEMA.procurement_snapshot
+  - name: PROCUREMENT_UC_CATALOG
+    value: REPLACE_CATALOG
+  - name: PROCUREMENT_UC_SCHEMA
+    value: REPLACE_SCHEMA
   - name: PROCUREMENT_EDITORS
     value: REPLACE_WITH_COMMA_SEPARATED_UPNS
+  - name: PROCUREMENT_ADMINS
+    value: REPLACE_WITH_ADMIN_UPNS

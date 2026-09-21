@@ -1,0 +1,22 @@
+{
+  "commit": "804b27117850748fffb996a1d93ae087882dba2f",
+  "tests": {
+    "passed": 35,
+    "seconds": 46.49
+  },
+  "receipt_60_of_100": {
+    "http": 201,
+    "status": "RECEIVED",
+    "unauthenticated_write": 201
+  },
+  "scenario_changes_after_base_write": true,
+  "scenario_cbn_writes_global_cells": {
+    "http": 200,
+    "base_cells": 11
+  },
+  "invalid_global_param_saved": 200,
+  "decimal_spread": {
+    "input": 2519.748,
+    "output_total": 2520.0
+  }
+}

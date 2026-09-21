@@ -1,0 +1,17 @@
+# Attach the Lakebase Autoscaling resource with key postgres in the Apps UI.
+# This bundle manages source and warehouse only; do not replace an existing database resource.
+bundle:
+  name: procurement
+variables:
+  warehouse_id:
+    description: SQL warehouse resource ID
+resources:
+  apps:
+    procurement:
+      name: procurement
+      source_code_path: .
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
