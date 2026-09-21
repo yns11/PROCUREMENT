@@ -89,8 +89,8 @@ def export_grid(result, article_ids=None, granularity="day", start=None, meta=No
         manifest["rows"][aid] = rows
         for k, label in LABELS:
             r = rows[k]
-            ws.cell(r, 1, aid)
-            ws.cell(r, 2, f"{a.designation} · {a.unit}")
+            ws.cell(r, 1, aid).data_type = "s"
+            ws.cell(r, 2, f"{a.designation} · {a.unit}").data_type = "s"
             ws.cell(r, 3, label)
         first_idx = ar.dates.index(dates[0])
         for layer, key in [("firm", "stock_firm_net"), ("forecast", "stock_forecast_net"), ("sim", "stock_sim_net")]:
@@ -222,9 +222,9 @@ def export_grid(result, article_ids=None, granularity="day", start=None, meta=No
         for aid, rows in manifest["rows"].items():
             for k, label in LABELS[:-1]:
                 rr = week.max_row + 1
-                week.cell(rr, 1, aid)
+                week.cell(rr, 1, aid).data_type = "s"
                 week.cell(rr, 2, label)
-                week.cell(rr, 3, "jours" if k == "coverage" else result.articles[aid].article.unit)
+                week.cell(rr, 3, "jours" if k == "coverage" else result.articles[aid].article.unit).data_type = "s"
                 for c, cols in enumerate(groups.values(), 4):
                     rng = f"SIMULATION!{letter(cols[0])}{rows[k]}:{letter(cols[-1])}{rows[k]}"
                     additive = k in INPUTS or (k.startswith("shortage") and result.params.shortage_policy == "lost")

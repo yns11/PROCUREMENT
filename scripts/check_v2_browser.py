@@ -9,7 +9,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -59,6 +59,15 @@ def main():
                     page.wait_for_load_state("networkidle")
                     assert page.locator("main h1").count(), path
                     assert page.locator("body").inner_text().find("Erreur interne") < 0, path
+                    assert page.get_by_role("alert").count() == 0, path
+                page.goto("http://localhost:8128/saisies")
+                page.get_by_role("button", name="Nouvelle saisie", exact=True).click()
+                comment = page.get_by_label("Commentaire", exact=True)
+                comment.press_sequentially("Vérification du focus clavier", delay=30)
+                expect(comment).to_have_value("Vérification du focus clavier")
+                expect(comment).to_be_focused()
+                page.keyboard.press("Escape")
+                expect(page.get_by_role("dialog")).to_have_count(0)
                 page.goto("http://localhost:8128/propositions")
                 page.get_by_role("button", name="Calcul CBN", exact=False).click()
                 page.wait_for_timeout(1000)
@@ -86,6 +95,7 @@ def main():
                             "cbn": "passed",
                             "acceptance": "passed",
                             "mobile_navigation": "passed",
+                            "drawer_keyboard": "passed",
                         },
                         indent=2,
                     )

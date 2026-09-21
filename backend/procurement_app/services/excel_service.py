@@ -92,6 +92,13 @@ def _date_cell(ws, row: int, col: int, value: dt.date | None):
     return cell
 
 
+def _literal_row(ws, row: int) -> None:
+    """ERP references and descriptions are text, never executable Excel formulas."""
+    for cell in ws[row]:
+        if isinstance(cell.value, str):
+            cell.data_type = "s"
+
+
 # =============================================================================
 # Simulation workbook
 # =============================================================================
@@ -118,6 +125,7 @@ def _alerts_sheet(ws, result: MrpResult, ids: list[str]) -> None:
                     a.message,
                 ]
             )
+            _literal_row(ws, r)
             fill = (
                 RED_FILL if a.severity.value == "critical" else YELLOW_FILL if a.severity.value == "warning" else None
             )
@@ -175,6 +183,7 @@ def _orders_sheet(ws, result: MrpResult, ids: list[str], start: dt.date | None =
                     None,
                 ]
             )
+            _literal_row(ws, r)
             ws.cell(r, 6).number_format = DATE_FMT
             for c in (6, 7, 10, 11, 12):
                 ws.cell(r, c).fill = INPUT_FILL

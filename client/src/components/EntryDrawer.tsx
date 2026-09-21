@@ -71,7 +71,7 @@ export function EntryDrawer({ draft, onClose, articles }: { draft: EntryDraft | 
           </Field>
         )}
         {form.kind === "receipt" && (
-          <Field label="Commande soldée (optionnel)" help="Une réception rattachée à une commande la solde">
+          <Field label="Commande rattachée (optionnel)" help="La quantité reçue diminue le solde à livrer ; une réception partielle conserve le reliquat.">
             <select className="select" value={form.order_id ?? ""} onChange={(e) => set({ order_id: e.target.value || null })}>
               <option value="">— aucune —</option>
               {(openOrders ?? []).map((o) => <option key={o.id} value={o.id}>{o.id} · {o.expected_date} · {o.qty}</option>)}

@@ -87,6 +87,8 @@ export function Tabs<T extends string>({ tabs, value, onChange }: { tabs: { id: 
 /* ---------------------------------------------------------------- Drawer */
 export function Drawer({ open, onClose, title, children, footer, wide }: { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; footer?: ReactNode; wide?: boolean }) {
   const panel = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   const titleId = useId();
   useEffect(() => {
     if (!open) return;
@@ -94,7 +96,7 @@ export function Drawer({ open, onClose, title, children, footer, wide }: { open:
     const focusables = () => [...(panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]') ?? [])];
     focusables()[0]?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") closeRef.current();
       if (e.key === "Tab") {
         const nodes = focusables(); const first = nodes[0]; const last = nodes[nodes.length-1];
         if (e.shiftKey && document.activeElement === first) {e.preventDefault();last?.focus();}
@@ -103,7 +105,7 @@ export function Drawer({ open, onClose, title, children, footer, wide }: { open:
     };
     window.addEventListener("keydown", onKey);
     return () => {window.removeEventListener("keydown", onKey);previous?.focus();};
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>

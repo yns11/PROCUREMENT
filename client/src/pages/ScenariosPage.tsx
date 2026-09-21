@@ -111,9 +111,9 @@ export default function ScenariosPage() {
                 <div className="grid kpis">
                   <Delta label="Critiques" a={shown.base_kpis.critical} b={shown.scenario_kpis.critical} lowerIsBetter />
                   <Delta label="Ruptures projetées" a={shown.base_kpis.stockouts} b={shown.scenario_kpis.stockouts} lowerIsBetter />
-                  <Delta label="Cdes simulées (qté)" a={shown.base_kpis.sim_orders_qty} b={shown.scenario_kpis.sim_orders_qty} qty />
+                  <Delta label="Articles avec cdes simulées" a={shown.base_kpis.sim_order_articles} b={shown.scenario_kpis.sim_order_articles} />
                   <Delta label="Couverture moy. (j)" a={shown.base_kpis.avg_coverage_days ?? 0} b={shown.scenario_kpis.avg_coverage_days ?? 0} />
-                  <Delta label="Besoin 30 j" a={shown.base_kpis.demand_next_30d} b={shown.scenario_kpis.demand_next_30d} qty />
+                  <Delta label="Commandes en retard" a={shown.base_kpis.late_orders} b={shown.scenario_kpis.late_orders} lowerIsBetter />
                 </div>
                 <div className="table-wrap" style={{ marginTop: 16, maxHeight: 420 }}>
                   <table className="tbl compact">
