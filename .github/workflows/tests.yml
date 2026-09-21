@@ -1,4 +1,4 @@
-name: Procurement validation
+name: POC simulation validation
 on: [push, pull_request]
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install -r requirements-dev.txt
-      - run: ruff check backend scripts/generate_demo_v2.py scripts/init_db.py scripts/check_v2_browser.py scripts/uc run.py
+      - run: ruff check backend scripts/generate_demo_v2.py scripts/init_db.py scripts/check_poc_browser.py scripts/uc run.py run_poc.py
       - run: python -m pytest backend/tests tests -q --ignore=backend/tests/test_grid_recalculation.py
   browser-and-excel:
     runs-on: ubuntu-latest
@@ -33,11 +33,11 @@ jobs:
       - run: npm ci --no-audit --no-fund && npm run build
         working-directory: client
       - run: python -m playwright install --with-deps chromium
-      - run: python scripts/check_v2_browser.py
+      - run: python scripts/check_poc_browser.py
       - run: sudo apt-get update && sudo apt-get install -y libreoffice-calc
       - run: python -m pytest backend/tests/test_grid_recalculation.py -q
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: browser-evidence
+          name: poc-browser-evidence
           path: test-results/

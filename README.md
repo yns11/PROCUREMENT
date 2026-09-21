@@ -1,52 +1,50 @@
-# PROCUREMENT — pilotage des approvisionnements
+# POC — Tableau de simulation approvisionnement
 
-Application Databricks Apps unifiée : interface React issue d’APPRO, moteur MRP indépendant, données ERP en Unity Catalog et écritures dans Lakebase/PostgreSQL. La V2 reprend les fonctions d’APPRO au commit `804b271` et les protections de PROCUREMENT V1. **Aucune modification apportée à APPRO.**
+Branche **`feat/poc-simulation-management`**, dérivée de `feat/unified-procurement` (`9b81013`). Application de démonstration autonome, avec deux articles fictifs et une date de référence fixée au **21 septembre 2026**.
 
-- Cockpit, filtres par approvisionneur/scénario/horizon, fiches articles, graphiques et grille jour/semaine.
-- Trois stocks : ferme, prévisionnel et simulé ; stock physique, solde net et manque distincts ; report ou perte de demande.
-- PDP versionné, nomenclatures, production réelle, commandes, réceptions partielles, ajustements, sourcing, MOQ/multiples/délais/calendriers.
-- Calcul CBN explicite, saisies arithmétiques, décisions accepter/modifier/ignorer, audit transactionnel.
-- Scénarios privés à base figée, comparaison, duplication et historique des définitions.
-- Excel à formules : **saisies directement dans SIMULATION**. Pas d’onglets COMMANDES/SAISIES dans cet export. La synthèse hebdomadaire utilise les calculs quotidiens.
-- Réimport Excel validé et idempotent dans un nouveau scénario ; migration de scénarios V1 JSON/Excel.
-
-## Démarrage local
-
-Python 3.11/3.12 et Node 22. Les huit articles de démonstration sont entièrement synthétiques ; aucun classeur industriel n’est distribué.
+## Démarrer
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-cd client
-npm ci
-npm run build
-cd ..
-PROCUREMENT_MODE=demo PROCUREMENT_DATA_SOURCE=local python run.py
+python -m pip install -r requirements.txt
+npm ci --prefix client
+npm run build --prefix client
+python run_poc.py
 ```
 
-Ouvrir `http://localhost:8000`. La date de la démonstration est fixée par le snapshot synthétique du 20 septembre 2026. En production, la référence est la date courante et la fraîcheur du lot ERP est contrôlée.
+Ouvrir `http://localhost:8000`. Le port peut être défini par `DATABRICKS_APP_PORT`.
 
-## Vérification
+Sur Databricks, utiliser une **App dédiée** et les fichiers de cette branche. `app.yaml` démarre `start.sh`, qui construit le client si nécessaire puis lance `run_poc.py`. Aucun warehouse ni mapping Unity Catalog n’est nécessaire au POC. Le bundle facultatif nomme l’App `procurement-poc` pour la distinguer de l’application complète. Aucun déploiement n’est effectué par la création de cette branche.
+
+Le POC utilise sa propre base `data/local/poc-management.db`. Elle ne remplace pas la base de l’application complète. Ce stockage de démonstration ne garantit pas la conservation après redéploiement Databricks ; les exemples peuvent être rechargés ou réinitialisés. Ne pas pointer cette branche vers une base de production existante : son schéma contient des champs propres au POC.
+
+## Écrans
+
+- **Référentiel** : Articles et Nomenclatures (BOM), import CSV/XLSX et édition.
+- **PDP** : import et édition du plan hebdomadaire.
+- **Commandes** : import et édition des commandes fermes et prévisionnelles.
+- **Fiches articles** : graphiques, tableau jour/semaine, Calcul CBN, Saisir, Excel. Les quatre onglets secondaires sont volontairement vides.
+- **Paramètres** : règles de calcul et réinitialisation de la démonstration.
+
+Pas de marque ni d’icône dans la navigation latérale. Les écrans n’affichent que les titres, labels, données et commandes ; les explications sont dans le guide de présentation.
+
+## Présenter
+
+**[Guide de démonstration et scénarios chiffrés](docs/poc/presentation.md)** — préparation, cinq séquences et résultats attendus.
+
+**[Règles et contrats d’import](docs/poc/regles.md)** — normalisation au lundi, rapprochement ferme/simulé réversible, types et limites du POC.
+
+**[Preuves de calcul](docs/poc/preuves.json)** — valeurs obtenues par les appels API sur le jeu fictif, indépendantes d’un navigateur.
+
+## Vérifier
 
 ```bash
-python -m pytest backend/tests tests -q
-ruff check backend scripts/generate_demo_v2.py scripts/init_db.py scripts/check_v2_browser.py scripts/uc run.py
-cd client && npm run build
+python -m pip install -r requirements-dev.txt
+python -m pytest backend/tests tests -q --ignore=backend/tests/test_grid_recalculation.py
+python -m playwright install --with-deps chromium
+python scripts/check_poc_browser.py
+python -m pytest backend/tests/test_grid_recalculation.py -q
 ```
 
-`python scripts/check_v2_browser.py` teste neuf routes, le CBN, l’acceptation et la navigation mobile. Installer Chromium avec `python -m playwright install chromium`. Les quatre tests `test_grid_recalculation.py` nécessitent LibreOffice : ils **recalculent** le classeur puis comparent ses résultats au moteur Python. La CI installe ces dépendances.
+La dernière commande nécessite LibreOffice. La CI exécute Python 3.11/3.12, le build TypeScript, les parcours navigateur du POC et le recalcul Excel. Les captures et le classeur de test se trouvent dans l’artefact `poc-browser-evidence`.
 
-## Documentation
-
-- [Audit actualisé d’APPRO, preuves et matrice de couverture](docs/07-audit-appro-et-fusion.md)
-- [Architecture et décisions de fusion](docs/08-architecture-v2.md)
-- [Règles métier V2 et contrat Excel](docs/09-regles-et-excel-v2.md)
-- [Déploiement et contrat Unity Catalog](docs/10-deploiement-v2.md)
-- [Recette et limites vérifiées](docs/11-recette-v2.md)
-
-Les documents `01` à `06` et le paquet Python `procurement/` décrivent la V1, conservée comme oracle de régression et adaptateur de migration. L’application servie par `run.py` utilise `backend/procurement_app/` et `client/`. Il n’y a qu’une interface publiée.
-
-## Production
-
-Le mode par défaut est `production` et échoue si Unity Catalog, l’identité Databricks ou le stockage durable ne sont pas configurés. Attacher le SQL warehouse et Lakebase Autoscaling, renseigner les variables et les rôles, initialiser le schéma avec un compte propriétaire puis déployer. Voir le guide V2 : les tests locaux ne constituent pas une validation de votre workspace Databricks.
+Le moteur modulaire de la V2 reste commun. L’adaptateur POC, ses entrées, sa règle de rapprochement et son lanceur sont séparés. Les documents V1/V2 restent dans `docs/` comme historique de conception ; ils ne décrivent pas le périmètre réduit de cette branche.

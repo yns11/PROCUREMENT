@@ -129,6 +129,9 @@ def build_params(ctx: AppContext, session: Session, **requested: Any) -> EngineP
     if s.as_of:
         base["as_of"] = s.as_of
     base.update(global_param_overrides(session))
+    if ctx.settings.poc:
+        base.setdefault("coverage_unit", "working")
+        base["late_order_policy"] = "keep"
     unknown = set(requested) - set(GLOBAL_FIELDS)
     if unknown:
         raise ValueError(f"Paramètres inconnus : {sorted(unknown)}")
@@ -367,6 +370,11 @@ def upsert_cell(
         row = AppCell(article_id=article_id, date=date, kind=kind, source=source, scenario_id=scenario_id or "")
         session.add(row)
     row.expression, row.qty, row.note, row.updated_by = expression.strip(), float(qty), note, user
+    if ctx.settings.poc and kind == "sim_order" and not scenario_id:
+        from ..data.poc import firm_totals
+
+        ds, _ = load_dataset(ctx, session)
+        row.firm_baseline = firm_totals(ds).get((article_id, date), 0.0)
     audit(
         session,
         user,
@@ -397,8 +405,12 @@ def run_cbn(
     coexist on the same day).
     Returns the result, the proposals written and the number of cells removed.
     """
-    perimeter = erp_dataset(ctx.source, planner=planner, article_ids=article_ids)
-    ids = {a.article_id for a in perimeter.articles}
+    perimeter, _ = load_dataset(ctx, session, scenario_id)
+    ids = {
+        a.article_id
+        for a in perimeter.articles
+        if (not article_ids or a.article_id in article_ids) and (not planner or a.planner.lower() == planner.lower())
+    }
     removed = 0
     scenario_events(session, scenario_id)  # ownership checked before any reset
     if reset:
@@ -458,7 +470,12 @@ def load_dataset(ctx, session, scenario_id=None):
             raise KeyError(scenario_id)
         if sc.baseline_json != "{}":
             return DATASET.validate_json(sc.baseline_json), []
-    ds = erp_dataset(ctx.source, holidays=ctx.settings.holiday_dates)
+    source = ctx.source.with_session(session) if hasattr(ctx.source, "with_session") else ctx.source
+    ds = erp_dataset(source, holidays=ctx.settings.holiday_dates)
     app_entries_into_dataset(ds, session)
+    if ctx.settings.poc:
+        from ..data.poc import reconcile_cells
+
+        reconcile_cells(ds, session)
     notes = apply_overrides(ds, session.scalars(select(ParamOverride).where(ParamOverride.scope != "global")).all())
     return ds, notes

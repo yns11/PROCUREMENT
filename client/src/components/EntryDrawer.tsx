@@ -18,7 +18,14 @@ export function EntryDrawer({ draft, onClose, articles }: { draft: EntryDraft | 
   const { data: openOrders } = useOrders(form.kind === "receipt" && form.article_id ? { article_id: form.article_id, status: "OPEN" } : undefined);
   const write = useWrite(async (f: EntryDraft) => {
     switch (f.kind) {
-      case "order": return api.post("/api/entries/orders", { article_id: f.article_id, supplier_id: f.supplier_id || null, expected_date: f.date, qty: f.qty, order_type: "FIRM", note: f.note ?? "" });
+      case "order": {
+        const current = await api.get<{rows: Record<string, unknown>[]}>("/api/poc/tables/orders");
+        return api.put("/api/poc/tables/orders", { rows: [...current.rows, {
+          order_id: `POC-${crypto.randomUUID().slice(0, 12)}`, article_id: f.article_id,
+          supplier_id: f.supplier_id || links?.[0]?.supplier_id, expected_date: f.date,
+          qty: f.qty, order_type: "FIRM", note: f.note ?? "",
+        }] });
+      }
       case "receipt": return api.post("/api/entries/receipts", { article_id: f.article_id, supplier_id: f.supplier_id || null, order_id: f.order_id || null, receipt_date: f.date, qty: f.qty, note: f.note ?? "" });
       case "adjustment": return api.post("/api/entries/adjustments", { article_id: f.article_id, date: f.date, qty: f.qty, comment: f.note ?? "" });
       case "production": return api.post("/api/entries/production", { program_id: f.program_id, date: f.date, qty: f.qty });
@@ -36,7 +43,7 @@ export function EntryDrawer({ draft, onClose, articles }: { draft: EntryDraft | 
       <div className="form-grid">
         <Field label="Type" span2>
           <select className="select" value={form.kind} onChange={(e) => set({ kind: e.target.value as EntryKind })}>
-            <option value="order">Commande ferme (passée au fournisseur)</option>
+            <option value="order">Commande ferme</option>
             <option value="receipt">Réception</option>
             <option value="adjustment">Ajustement de stock (±)</option>
             <option value="production">Production réelle d'un programme</option>
@@ -66,12 +73,12 @@ export function EntryDrawer({ draft, onClose, articles }: { draft: EntryDraft | 
           </Field>
         )}
         {form.kind === "order" && (
-          <Field label="Nature" help="Commande réelle, comptée dans le stock ferme. Pour simuler, saisir dans la ligne Commandes simulées du tableau.">
-            <div className="input" style={{ display: "flex", alignItems: "center" }}>Ferme (passée au fournisseur)</div>
+          <Field label="Nature">
+            <div className="input" style={{ display: "flex", alignItems: "center" }}>Ferme</div>
           </Field>
         )}
         {form.kind === "receipt" && (
-          <Field label="Commande rattachée (optionnel)" help="La quantité reçue diminue le solde à livrer ; une réception partielle conserve le reliquat.">
+          <Field label="Commande rattachée (optionnel)">
             <select className="select" value={form.order_id ?? ""} onChange={(e) => set({ order_id: e.target.value || null })}>
               <option value="">— aucune —</option>
               {(openOrders ?? []).map((o) => <option key={o.id} value={o.id}>{o.id} · {o.expected_date} · {o.qty}</option>)}
@@ -81,7 +88,7 @@ export function EntryDrawer({ draft, onClose, articles }: { draft: EntryDraft | 
         <Field label={form.kind === "order" ? "Date de livraison attendue" : "Date"}>
           <input className="input" type="date" value={form.date ?? ""} onChange={(e) => set({ date: e.target.value })} />
         </Field>
-        <Field label={`Quantité${unit ? ` (${unit})` : ""}`} help={form.kind === "adjustment" ? "Négatif pour une sortie / casse" : undefined}>
+        <Field label={`Quantité${unit ? ` (${unit})` : ""}`}>
           <input className="input" type="number" step="any" value={form.qty ?? ""} onChange={(e) => set({ qty: e.target.value === "" ? undefined : Number(e.target.value) })} />
         </Field>
         {form.kind !== "production" && (

@@ -59,7 +59,7 @@ function ChartTooltip({ active, payload, label, unit, granularity }: { active?: 
   return (
     <div className="tooltip-box">
       <div className="t">{periodLabel(String(label), granularity)}</div>
-      {payload.filter((p) => p.value !== 0 || p.name.startsWith("Stock")).map((p) => (
+      {payload.filter((p) => p.value !== 0 || p.name.startsWith("Stock") || p.name.startsWith("Couverture")).map((p) => (
         <div key={p.name} className="r"><span style={{ color: p.color }}>{p.name}</span><b>{p.name === "Ajustements" || p.name === "Cdes simulées" ? (p.value < 0 ? "−" : "") + fmtQty(Math.abs(p.value), unit) : fmtQty(Math.abs(p.value), unit)}</b></div>
       ))}
     </div>
@@ -78,7 +78,7 @@ export function CoverageChart({ data, height = 120 }: { data: ProjectionResponse
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis dataKey="period" hide />
         <YAxis tick={{ fontSize: 10, fill: "var(--fg-subtle)" }} width={64} unit=" j" />
-        <Tooltip formatter={(v: number) => [`${v} j`, ""]} labelFormatter={(l) => periodLabel(String(l), data.granularity)} contentStyle={{ fontSize: 11 }} />
+        <Tooltip content={<ChartTooltip unit="j" granularity={data.granularity} />} />
         <ReferenceLine y={a.alert_red_days} stroke="var(--critical)" strokeDasharray="3 3" label={{ value: "rouge", fontSize: 9, fill: "var(--critical)", position: "insideTopLeft" }} />
         <ReferenceLine y={a.alert_yellow_days} stroke="var(--warning)" strokeDasharray="3 3" label={{ value: "orange", fontSize: 9, fill: "var(--warning)", position: "insideTopLeft" }} />
         <ReferenceLine y={a.overstock_days} stroke="var(--ok)" strokeDasharray="3 3" label={{ value: "surstock", fontSize: 9, fill: "var(--ok)", position: "insideTopLeft" }} />

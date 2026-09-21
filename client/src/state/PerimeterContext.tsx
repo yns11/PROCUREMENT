@@ -21,8 +21,8 @@ interface Ctx {
   engineParams: Record<string, string | number | boolean | null>;
 }
 
-const KEY = "procurement.perimeter.v1";
-const defaults: Perimeter = { planner: null, scenarioId: null, horizonDays: 120, granularity: "week", theme: "system" };
+const KEY = "procurement.poc.perimeter.v1";
+const defaults: Perimeter = { planner: null, scenarioId: null, horizonDays: 60, granularity: "week", theme: "system" };
 
 function load(): Perimeter {
   try {
