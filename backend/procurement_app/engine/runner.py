@@ -292,7 +292,9 @@ def run_mrp(dataset: Dataset, params: EngineParams | None = None, article_ids: l
                         )
                     )
         cov = {
-            name: coverage_days(layer.net, demand, index, calendar, params.coverage_unit, params.coverage_tie_rule)
+            name: coverage_days(
+                layer.net, demand, index, calendar, params.coverage_unit, params.coverage_tie_rule, known_end
+            )
             for name, layer in (("firm", firm), ("forecast", forecast), ("sim", sim))
         }
 

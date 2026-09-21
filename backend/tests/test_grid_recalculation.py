@@ -21,6 +21,8 @@ def test_native_excel_matches_engine(tmp_path, policy, unit):
     if not office:
         pytest.skip("LibreOffice absent; run scripts/check_excel.sh or CI Excel job")
     ds = make_dataset()
+    if policy == "lost":
+        ds.plan = ds.plan[:1]  # unknown demand after the first week must not inflate coverage
     ds.holidays = [MON.replace(day=23)]
     params = EngineParams(as_of=MON, horizon_days=20, coverage_unit=unit, shortage_policy=policy)
     original = run_mrp(ds, params)

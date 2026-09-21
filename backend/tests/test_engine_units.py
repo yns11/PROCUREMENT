@@ -94,6 +94,16 @@ def test_ceil_to_multiple():
     assert ceil_to_multiple(7, 0) == 7
 
 
+def test_coverage_is_bounded_by_continuous_known_plan():
+    ds = make_dataset(stock=[StockSnapshot("A1", MON - dt.timedelta(days=1), 100000)])
+    ds.plan = ds.plan[:1]
+    for unit, expected in [("calendar", 6), ("working", 4)]:
+        ar = run_mrp(ds, EngineParams(as_of=MON, horizon_days=20, coverage_unit=unit)).articles["A1"]
+        assert ar.coverage_sim[ar.dates.index(MON)] == expected
+        assert ar.coverage_sim[ar.dates.index(MON + dt.timedelta(days=7))] == 0
+        assert ar.kpis["coverage_censored"]
+
+
 # ------------------------------------------------------------------ demand / projection
 def test_demand_explosion_and_actuals():
     ds = make_dataset(actuals=[ActualLine("P1", MON, 0.0), ActualLine("P1", MON + dt.timedelta(days=1), 300.0)])

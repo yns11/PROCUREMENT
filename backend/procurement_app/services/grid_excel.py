@@ -84,6 +84,8 @@ def export_grid(result, article_ids=None, granularity="day", start=None, meta=No
     for aid in ids:
         ar = result.articles[aid]
         a = ar.article
+        known_until = dt.date.fromisoformat(ar.kpis["demand_known_until"])
+        coverage_end_col = 4 + sum(d <= known_until for d in dates)
         top = ws.max_row + 2
         rows = {k: top + j for j, (k, _) in enumerate(LABELS)}
         manifest["rows"][aid] = rows
@@ -153,8 +155,8 @@ def export_grid(result, article_ids=None, granularity="day", start=None, meta=No
                 rows["cumulative"], j, f"={ref('demand')}" if j == 5 else f"={prev}{rows['cumulative']}+{ref('demand')}"
             )
             op = "<=" if result.params.coverage_tie_rule == "covered" else "<"
-            end = letter(len(dates) + 4)
-            if j < len(dates) + 4:
+            end = letter(max(1, coverage_end_col))
+            if j < coverage_end_col:
                 criteria = f'"{op}"&({ref("cumulative")}+{ref("net_sim")})'
                 count = f"COUNTIF({letter(j + 1)}{rows['cumulative']}:{end}{rows['cumulative']},{criteria})"
                 if result.params.coverage_unit == "working":

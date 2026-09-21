@@ -2,12 +2,12 @@
 
 ## Vérifications automatiques
 
-Résultats locaux du 21 septembre 2026 : **64 tests Python/API/V1 réussis**, **4 tests de recalcul LibreOffice réussis**, Ruff et build TypeScript/Vite réussis. Le premier passage GitHub Actions de la branche fusionnée a également exécuté avec succès le backend sous Python 3.11 et 3.12 et le parcours navigateur (neuf routes, CBN, acceptation, menu mobile). Les exécutions suivantes et leurs captures font foi pour les correctifs de livraison : [CI de la PR #1](https://github.com/yns11/PROCUREMENT/pull/1/checks).
+Résultats locaux du 21 septembre 2026 : **65 tests Python/API/V1 réussis**, **4 tests de recalcul LibreOffice réussis**, Ruff et build TypeScript/Vite réussis. Le premier passage GitHub Actions de la branche fusionnée a également exécuté avec succès le backend sous Python 3.11 et 3.12 et le parcours navigateur (neuf routes, CBN, acceptation, menu mobile). Les exécutions suivantes et leurs captures font foi pour les correctifs de livraison : [CI de la PR #1](https://github.com/yns11/PROCUREMENT/pull/1/checks).
 
 - Suite PROCUREMENT V1 conservée comme oracle de non-régression de l’ancien contrat.
 - Unités V2 : calendriers, lissage, réel zéro, nomenclature, stock, trois couches, MOQ/multiples, propositions, délais, quotas, scénarios et expressions.
 - API V2 : neuf familles de lecture, réception partielle/réversalité, contrôle d’entrée, conflit 409, scénarios figés, CBN isolé/reproductible, acceptation sans double flux, rôles/privacité, duplication, migration V1, PDP partiel, Excel inchangé/modifié/réimporté.
-- Excel natif : quatre configurations (`backlog`/`lost` × jours calendaires/ouvrés), avec fermeture de site et modification de cellules ; recalcul LibreOffice puis comparaison de chaque cellule de stock, manque, cible et couverture au moteur Python.
+- Excel natif : quatre configurations (`backlog`/`lost` × jours calendaires/ouvrés), avec fermeture de site, modification de cellules et PDP incomplet pour les deux cas `lost` ; recalcul LibreOffice puis comparaison de chaque cellule de stock, manque, cible et couverture au moteur Python. La couverture ne dépasse jamais la période de demande connue continue.
 - Sécurité des exports : références, désignations et unités ERP commençant par `=` restent des textes, sans formule exécutable ; les formules produites par l’application restent calculables.
 - Frontend : TypeScript et build Vite ; script Playwright de neuf routes, calcul CBN, décision d’acceptation et menu mobile. Son exécution navigateur dépend de la disponibilité des sockets/processus Chromium dans l’environnement. La CI prévoit un runner Ubuntu complet ; ne pas confondre un build réussi avec une recette visuelle réussie.
 

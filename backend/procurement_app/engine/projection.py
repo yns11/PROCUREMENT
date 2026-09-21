@@ -88,6 +88,7 @@ def coverage_days(
     calendar: WorkCalendar,
     unit: str = "calendar",
     tie_rule: str = "covered",
+    known_until: dt.date | None = None,
 ) -> np.ndarray:
     """Coverage in days for every day of the window.
 
@@ -103,6 +104,10 @@ def coverage_days(
     # j_max = last index with cum[j] <= cum[i] + stock[i]
     j_max = np.searchsorted(cum, targets, side=side) - 1
     j_max = np.clip(j_max, 0, n - 1)
+    if known_until is not None:
+        # A missing PDP is unknown demand, not an unlimited run of zero demand.
+        known_index = max(0, min(n - 1, (known_until - index.dates[0]).days))
+        j_max = np.minimum(j_max, known_index)
     idx = np.arange(n)
     j_max = np.maximum(j_max, idx)  # never before i
     if unit == "working":
