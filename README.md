@@ -1,59 +1,52 @@
-# Procurement
+# PROCUREMENT — pilotage des approvisionnements
 
-Application de planification des approvisionnements destinée à **Databricks Apps**. Le moteur transforme un PDP hebdomadaire et une nomenclature à un niveau en besoins, stocks projetés, alertes et propositions de commandes. L’interface est en français.
+Application Databricks Apps unifiée : interface React issue d’APPRO, moteur MRP indépendant, données ERP en Unity Catalog et écritures dans Lakebase/PostgreSQL. La V2 reprend les fonctions d’APPRO au commit `804b271` et les protections de PROCUREMENT V1. **Aucune modification apportée à APPRO.**
 
-Le code est exécutable en démonstration locale. Le raccordement aux données industrielles exige de configurer les ressources Databricks et le mapping de vos tables Unity Catalog. Aucune connexion à un workspace réel n’est supposée déjà réalisée.
+- Cockpit, filtres par approvisionneur/scénario/horizon, fiches articles, graphiques et grille jour/semaine.
+- Trois stocks : ferme, prévisionnel et simulé ; stock physique, solde net et manque distincts ; report ou perte de demande.
+- PDP versionné, nomenclatures, production réelle, commandes, réceptions partielles, ajustements, sourcing, MOQ/multiples/délais/calendriers.
+- Calcul CBN explicite, saisies arithmétiques, décisions accepter/modifier/ignorer, audit transactionnel.
+- Scénarios privés à base figée, comparaison, duplication et historique des définitions.
+- Excel à formules : **saisies directement dans SIMULATION**. Pas d’onglets COMMANDES/SAISIES dans cet export. La synthèse hebdomadaire utilise les calculs quotidiens.
+- Réimport Excel validé et idempotent dans un nouveau scénario ; migration de scénarios V1 JSON/Excel.
 
-## Démarrer localement
+## Démarrage local
 
-Python 3.11 ou 3.12 :
+Python 3.11/3.12 et Node 22. Les huit articles de démonstration sont entièrement synthétiques ; aucun classeur industriel n’est distribué.
 
 ```bash
 python -m venv .venv
-# Windows PowerShell : .venv\Scripts\Activate.ps1
-# Linux/macOS : source .venv/bin/activate
-python -m pip install -r requirements.txt
-# Windows PowerShell : $env:APP_MODE="demo"
-# Linux/macOS : export APP_MODE=demo
-python run.py
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+cd client
+npm ci
+npm run build
+cd ..
+PROCUREMENT_MODE=demo PROCUREMENT_DATA_SOURCE=local python run.py
 ```
 
-Ouvrir http://localhost:8000. La démonstration contient uniquement des données fictives et conserve les scénarios dans `procurement-demo.db`. Le mode par défaut est production : une configuration incomplète provoque un refus de démarrage, jamais un basculement silencieux vers SQLite.
+Ouvrir `http://localhost:8000`. La date de la démonstration est fixée par le snapshot synthétique du 20 septembre 2026. En production, la référence est la date courante et la fraîcheur du lot ERP est contrôlée.
 
-## Fonctionnalités
+## Vérification
 
-- Cockpit des ruptures, couvertures et surstocks ; recherche et filtre fournisseur.
-- Projection ferme/simulée, courbes et tableaux journaliers, hebdomadaires et mensuels.
-- Propositions avec MOQ, multiples, délais, jours fermés, priorité fournisseur ou quotas.
-- Saisie et modification des référentiels, PDP, réalisé, commandes, réceptions et ajustements.
-- Modes plan, réalisé prioritaire et réalisé seul ; choix des conventions de réception et des retards.
-- Scénarios indépendants, duplication, versions, conflits de modification et restauration.
-- Export/réimport Excel versionné ; import PDP CSV ; lecture des données ERP via SQL Warehouse.
-- Persistance PostgreSQL/Lakebase et identité Databricks ; aucun envoi vers l’ERP.
+```bash
+python -m pytest backend/tests tests -q
+ruff check backend scripts/generate_demo_v2.py scripts/init_db.py scripts/check_v2_browser.py scripts/uc run.py
+cd client && npm run build
+```
+
+`python scripts/check_v2_browser.py` teste neuf routes, le CBN, l’acceptation et la navigation mobile. Installer Chromium avec `python -m playwright install chromium`. Les quatre tests `test_grid_recalculation.py` nécessitent LibreOffice : ils **recalculent** le classeur puis comparent ses résultats au moteur Python. La CI installe ces dépendances.
 
 ## Documentation
 
-1. [Analyse du classeur et du processus actuel](docs/01-analyse-excel.md)
-2. [Règles métier et variantes](docs/02-regles-metier.md)
-3. [Architecture et design](docs/03-architecture.md)
-4. [Déploiement Databricks pas à pas](docs/04-deploiement.md)
-5. [Recette et limites de validation](docs/05-recette.md)
+- [Audit actualisé d’APPRO, preuves et matrice de couverture](docs/07-audit-appro-et-fusion.md)
+- [Architecture et décisions de fusion](docs/08-architecture-v2.md)
+- [Règles métier V2 et contrat Excel](docs/09-regles-et-excel-v2.md)
+- [Déploiement et contrat Unity Catalog](docs/10-deploiement-v2.md)
+- [Recette et limites vérifiées](docs/11-recette-v2.md)
 
-Voir également le [schéma PostgreSQL](sql/app_schema.sql), le [contrat UC](sql/uc_contract.sql) et le [rapport de validation](docs/06-validation.md).
+Les documents `01` à `06` et le paquet Python `procurement/` décrivent la V1, conservée comme oracle de régression et adaptateur de migration. L’application servie par `run.py` utilise `backend/procurement_app/` et `client/`. Il n’y a qu’une interface publiée.
 
-## Tests
+## Production
 
-```bash
-python -m pip install -r requirements-dev.txt
-python -m pytest -q
-```
-
-API documentée sur `/api/docs`. Les opérations de mutation exigent `X-Procurement-Request: 1`. Les scénarios appartiennent à leur créateur. En production, l’App doit rester derrière le proxy d’authentification Databricks.
-
-## Reprise Excel
-
-```bash
-python -m scripts.inspect_legacy "chemin/ancien-classeur.xlsx" --output "chemin-prive/staging.json"
-```
-
-Cet extracteur lit le modèle existant sans le modifier et liste les points à résoudre. Le résultat contient des données opérationnelles et doit rester hors du dépôt public. Le réimport depuis l’interface attend le format Excel exporté par cette application, pas le classeur historique.
+Le mode par défaut est `production` et échoue si Unity Catalog, l’identité Databricks ou le stockage durable ne sont pas configurés. Attacher le SQL warehouse et Lakebase Autoscaling, renseigner les variables et les rôles, initialiser le schéma avec un compte propriétaire puis déployer. Voir le guide V2 : les tests locaux ne constituent pas une validation de votre workspace Databricks.

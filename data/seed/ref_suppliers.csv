@@ -1,0 +1,3 @@
+supplier_id,name,country,contact,delivery_weekdays,calendar_id,active
+SUP-1,Fournisseur Démo 1,FR,,"1,2,3,4,5",DEFAULT,True
+SUP-2,Fournisseur Démo 2,FR,,"1,2,3,4,5",DEFAULT,True

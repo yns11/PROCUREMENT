@@ -11,3 +11,7 @@ test-results/
 playwright-report/
 *staging*.json
 legacy-*.json
+
+node_modules/
+client/dist/
+.ruff_cache/

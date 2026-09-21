@@ -1,0 +1,9 @@
+article_id,supplier_id,moq,pack_qty,lead_time_days,quota_pct,priority,active
+DEMO-001,SUP-2,50,10,4,100,1,True
+DEMO-002,SUP-1,50,10,5,100,1,True
+DEMO-003,SUP-2,50,10,3,100,1,True
+DEMO-004,SUP-1,50,10,4,100,1,True
+DEMO-005,SUP-2,50,10,5,100,1,True
+DEMO-006,SUP-1,50,10,3,100,1,True
+DEMO-007,SUP-2,50,10,4,100,1,True
+DEMO-008,SUP-1,50,10,5,100,1,True

@@ -1,0 +1,9 @@
+program_id,article_id,qty_per,unit,scrap_pct,valid_from,valid_to
+VEH-A,DEMO-001,2,PCE,0,,
+VEH-A,DEMO-002,3,PCE,0,,
+VEH-A,DEMO-003,1,PCE,0,,
+VEH-A,DEMO-004,2,PCE,0,,
+VEH-A,DEMO-005,0.25,KG,0,,
+VEH-A,DEMO-006,1,PCE,0,,
+VEH-A,DEMO-007,2,PCE,0,,
+VEH-A,DEMO-008,3,PCE,0,,

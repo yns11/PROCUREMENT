@@ -1,0 +1,9 @@
+article_id,designation,unit,family,planner,coverage_target_days,alert_red_days,alert_yellow_days,overstock_days,safety_stock_qty,service_rate_tracked,dhrq,active
+DEMO-001,Vis de fixation,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-002,Support moteur,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-003,Joint étanche,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-004,Câble de connexion,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-005,Résine technique,KG,Matière,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-006,Rondelle acier,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-007,Boîtier injecté,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
+DEMO-008,Clip de maintien,PCE,Composant,Équipe Démo,7,3,7,30,20,True,,True
