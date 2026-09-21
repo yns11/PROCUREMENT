@@ -212,3 +212,19 @@ table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size
 @media (max-width: 1100px) { .topbar { flex-wrap: wrap; } .topbar .ctx { flex: 1; } }
 @media (max-width: 600px) { .content { padding: 16px 10px; } .topbar .ctx { width: 100%; } .ctx .field { min-width: 0 !important; flex: 1 1 140px; } .topbar .right { width: 100%; justify-content: flex-end; } .card { overflow-x: auto; } .page-header .actions { flex-wrap: wrap; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Management POC: quiet navigation, compact editors and a clear simulation toolbar. */
+.poc-shell .sidebar {padding-top: 32px;}
+.poc-shell .sidebar nav a {padding: 14px 16px;}
+.poc-toolbar {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:10px;}
+.poc-editor {max-height:65vh; border:0;}
+.poc-editor input {min-width:125px;}
+.poc-editor input[type=number] {min-width:105px;width:115px;}
+.poc-editor input[type=date] {min-width:150px;}
+.poc-editor select {min-width:145px;}
+.poc-editor th:first-child,.poc-editor td:first-child {position:sticky;left:0;background:var(--bg-elev);z-index:2;}
+.poc-editor th:first-child {z-index:4;background:var(--bg-subtle);}
+.poc-pending {min-height:180px;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--bg-elev);}
+.article-link {border:0;background:transparent;color:var(--brand-fg);font:inherit;font-weight:600;cursor:pointer;padding:0;}
+#poc-menu {display:none;}
+@media(max-width:900px){#poc-menu{display:inline-flex}.poc-shell .topbar{height:auto;min-height:64px;flex-wrap:wrap;padding:12px;}.poc-shell .topbar .right{flex-wrap:wrap;}}

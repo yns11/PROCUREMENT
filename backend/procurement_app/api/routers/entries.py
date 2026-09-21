@@ -270,6 +270,7 @@ def list_cells(
     kind: str | None = None,
     scenario_id: str | None = None,
     session: Session = Depends(session_dep),
+    ctx: AppContext = Depends(ctx_dep),
 ):
     q = select(AppCell).where(AppCell.scenario_id == (scenario_id or "")).order_by(AppCell.article_id, AppCell.date)
     if article_id:
@@ -278,7 +279,24 @@ def list_cells(
         q = q.where(
             AppCell.kind.in_([kind, {"sim_order": "planned_flow", "adjustment": "adjustment_flow"}.get(kind, kind)])
         )
-    return session.scalars(q).all()
+    rows = session.scalars(q).all()
+    if ctx.settings.poc and not scenario_id:
+        from ...data.poc import effective_cells
+
+        ds, _ = mrp_service.load_dataset(ctx, session)
+        # Allocate across all kinds/sources before filtering the response.
+        all_rows = session.scalars(select(AppCell).where(AppCell.scenario_id == "")).all()
+        effective = effective_cells(ds, all_rows)
+        return [
+            S.CellOut.model_validate(r).model_copy(
+                update={
+                    "qty": effective[r.id],
+                    "expression": str(effective[r.id]) if effective[r.id] != r.qty else r.expression,
+                }
+            )
+            for r in rows
+        ]
+    return rows
 
 
 @router.put("/cells", response_model=S.CellOut | None)

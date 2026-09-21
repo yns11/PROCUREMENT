@@ -43,6 +43,14 @@ class Base(DeclarativeBase):
     pass
 
 
+class PocWorkspace(Base):
+    """Isolated demonstration inputs, saved atomically and covered by the revision lock."""
+
+    __tablename__ = "poc_workspace"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    tables_json: Mapped[str] = mapped_column(Text)
+
+
 class AppOrder(Base):
     """Order typed in the app (planned) or accepted from a proposal."""
 
@@ -189,6 +197,7 @@ class AppCell(Base):
     typing on that day replaces both.
     """
 
+    firm_baseline: Mapped[float | None] = mapped_column(Float, nullable=True)
     __tablename__ = "app_cells"
     __table_args__ = (Index("ix_app_cells_key", "scenario_id", "article_id", "date", "kind", "source", unique=True),)
     scenario_id: Mapped[str] = mapped_column(String(40), default="", index=True)

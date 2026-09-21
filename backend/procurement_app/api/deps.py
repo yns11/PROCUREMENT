@@ -40,9 +40,14 @@ def session_dep(
     session = ctx.session()
     try:
         session.info.update(actor=user, context=ctx)
-        mutation = request.method not in ("GET", "HEAD", "OPTIONS") and request.url.path not in (
-            "/api/simulate",
-            "/api/imports/preview",
+        mutation = (
+            not request.url.path.startswith("/api/poc/parse/")
+            and request.method not in ("GET", "HEAD", "OPTIONS")
+            and request.url.path
+            not in (
+                "/api/simulate",
+                "/api/imports/preview",
+            )
         )
         if mutation:
             editors = {x.strip().lower() for x in (ctx.settings.editors + "," + ctx.settings.admins).split(",")}

@@ -1,18 +1,14 @@
 command: ['bash', 'start.sh']
 env:
+  - name: PROCUREMENT_POC
+    value: 'true'
   - name: PROCUREMENT_MODE
-    value: production
+    value: demo
   - name: PROCUREMENT_DATA_SOURCE
-    value: uc
-  - name: LAKEBASE_ENDPOINT
-    valueFrom: postgres
-  - name: DATABRICKS_WAREHOUSE_ID
-    valueFrom: sql-warehouse
-  - name: PROCUREMENT_UC_CATALOG
-    value: REPLACE_CATALOG
-  - name: PROCUREMENT_UC_SCHEMA
-    value: REPLACE_SCHEMA
-  - name: PROCUREMENT_EDITORS
-    value: REPLACE_WITH_COMMA_SEPARATED_UPNS
-  - name: PROCUREMENT_ADMINS
-    value: REPLACE_WITH_ADMIN_UPNS
+    value: local
+  - name: PROCUREMENT_AS_OF
+    value: '2026-09-21'
+  - name: PROCUREMENT_HORIZON_DAYS
+    value: '60'
+  - name: PROCUREMENT_HISTORY_DAYS
+    value: '0'

@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="PROCUREMENT_", env_file=str(REPO_ROOT / ".env"), extra="ignore")
     mode: Literal["demo", "production"] = "production"
+    poc: bool = False
     editors: str = ""
     admins: str = ""
     erp_max_age_hours: int = Field(24, ge=1, le=168)

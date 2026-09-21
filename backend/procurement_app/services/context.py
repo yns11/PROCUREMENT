@@ -77,8 +77,13 @@ def get_context() -> AppContext:
         with _context_lock:
             if _context is None:
                 settings = get_settings()
-                source = build_source(settings)
                 factory = init_store(settings.resolved_db_url)
+                if settings.poc:
+                    from ..data.poc import PocSource
+
+                    source = PocSource(factory, settings.as_of)
+                else:
+                    source = build_source(settings)
                 log.info("APPRO context ready: source=%s db=%s", source.name, settings.resolved_db_url.split("@")[-1])
                 _context = AppContext(settings=settings, source=source, session_factory=factory)
     return _context

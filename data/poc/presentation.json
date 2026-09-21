@@ -1,0 +1,180 @@
+{
+  "articles": [
+    {
+      "article_id": "DEMO-001",
+      "designation": "Connecteur de phase",
+      "unit": "PCE",
+      "stock_initial": 600,
+      "coverage_target_days": 5,
+      "safety_stock_qty": 0,
+      "supplier_id": "FOURN-01",
+      "moq": 100,
+      "pack_qty": 50,
+      "lead_time_days": 0
+    },
+    {
+      "article_id": "DEMO-002",
+      "designation": "Carter aluminium",
+      "unit": "PCE",
+      "stock_initial": 300,
+      "coverage_target_days": 5,
+      "safety_stock_qty": 0,
+      "supplier_id": "FOURN-02",
+      "moq": 60,
+      "pack_qty": 30,
+      "lead_time_days": 5
+    }
+  ],
+  "bom": [
+    {
+      "program_id": "MOTEUR-A",
+      "article_id": "DEMO-001",
+      "qty_per": 2
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "article_id": "DEMO-002",
+      "qty_per": 1
+    }
+  ],
+  "pdp": [
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-09-21",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-09-28",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-10-05",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-10-12",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-10-19",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-10-26",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-11-02",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-11-09",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-11-16",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-11-23",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-11-30",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-12-07",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-12-14",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-12-21",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2026-12-28",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-01-04",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-01-11",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-01-18",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-01-25",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-02-01",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-02-08",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-02-15",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-02-22",
+      "qty": 250
+    },
+    {
+      "program_id": "MOTEUR-A",
+      "week_start": "2027-03-01",
+      "qty": 250
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "FERME-001",
+      "article_id": "DEMO-001",
+      "supplier_id": "FOURN-01",
+      "expected_date": "2026-09-24",
+      "qty": 200,
+      "order_type": "FIRM"
+    },
+    {
+      "order_id": "PREV-001",
+      "article_id": "DEMO-001",
+      "supplier_id": "FOURN-01",
+      "expected_date": "2026-09-30",
+      "qty": 200,
+      "order_type": "FORECAST"
+    }
+  ]
+}

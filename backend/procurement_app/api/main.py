@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from .. import __version__
 from ..config import get_settings
 from .deps import current_user
-from .routers import cbn, entries, files, mrp, pdp, reference, scenarios
+from .routers import cbn, entries, files, mrp, pdp, poc, reference, scenarios
 
 
 def create_app() -> FastAPI:
@@ -25,7 +25,16 @@ def create_app() -> FastAPI:
     def health():
         return {"status": "ok", "version": __version__}
 
-    for r in (reference.router, mrp.router, entries.router, cbn.router, scenarios.router, pdp.router, files.router):
+    for r in (
+        reference.router,
+        mrp.router,
+        entries.router,
+        cbn.router,
+        scenarios.router,
+        pdp.router,
+        files.router,
+        poc.router,
+    ):
         app.include_router(r, dependencies=[Depends(current_user)])
 
     @app.middleware("http")
